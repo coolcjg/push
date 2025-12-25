@@ -1,15 +1,15 @@
 from fastapi import FastAPI
 
-from core.database import engine, Base
-from  api.v1.board import router as board_router
+from api.v1.post import router as post_router
 
-Base.metadata.create_all(bind=engine)
-app = FastAPI(title="Board API")
+#database 테이블 자동 생성
+#Base.metadata.create_all(bind=engine)
+app = FastAPI(title="Post API")
 
 app.include_router(
-    board_router,
+    post_router,
     prefix="/api/v1",
-    tags=["Board"]
+    tags=["Post"]
 )
 
 @app.get("/")
