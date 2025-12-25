@@ -16,3 +16,10 @@ SessionLocal = sessionmaker(
 )
 
 Base = declarative_base()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db   #이거 모르겠음.
+    finally:
+        db.close()

@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
-from models import Board
-from schemas import BoardCreate
+from models.board import Board
+from schemas.board import BoardCreate
 
 
 def get_board_list(db:Session):

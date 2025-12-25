@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy import Column, Integer, String, Text, DateTime
 
-from database import Base
+from core.database import Base
 
 
 class Board(Base):
