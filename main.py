@@ -1,7 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from starlette.responses import JSONResponse
 
 from api.v1.post import router as post_router
 from api.v1.user import user_router
+from code.ResultCode import ResultCode
+from exception.CustomException import CustomException
+from schemas.ApiResponse import ApiResponse
 
 #database 테이블 자동 생성
 #Base.metadata.create_all(bind=engine)
@@ -27,3 +31,33 @@ async def root():
 @app.get("/hello/{name}")
 async def say_hello(name: str):
     return {"message": f"Hello {name}"}
+
+
+@app.exception_handler(CustomException)
+async def custom_exception_handler(
+        request: Request,
+        exc: CustomException
+):
+    return JSONResponse(
+        status_code = 200,
+        content=ApiResponse(
+            code = exc.code,
+            message = exc.message,
+            data=None
+        ).model_dump()
+    )
+
+
+@app.exception_handler(Exception)
+async def exception_handler(
+        request: Request,
+        exc: RuntimeError
+):
+    return JSONResponse(
+        status_code = 500,
+        content=ApiResponse(
+            code=ResultCode.INTERNAL_ERROR,
+            message="Internal server error",
+            data=None
+        ).model_dump()
+    )

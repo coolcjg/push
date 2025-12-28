@@ -23,3 +23,4 @@ class ResultCode(StrEnum):
     # Server Error
     INTERNAL_ERROR = "INTERNAL_ERROR"
     DATABASE_ERROR = "DATABASE_ERROR"
+    AES_ERROR = "AES_ERROR"

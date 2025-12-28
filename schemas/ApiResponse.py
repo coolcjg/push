@@ -7,4 +7,4 @@ T = TypeVar('T')
 class ApiResponse(BaseModel, Generic[T]):
     code:str
     message:str
-    data:T
+    data:T | None = None

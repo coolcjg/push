@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 
+from common.AES256 import AES256
 from models.user import User
 from schemas.UserDto import UserDto
 
@@ -17,13 +18,15 @@ def get_user_list(db:Session, pageNum:int = 1, pageSize: int = 10):
         .all()
     )
 
+    aes = AES256()
+
     user_dtos=[
         UserDto(
             userId = u.user_id,
             auth   = u.auth,
             email  = u.email,
             image  = u.image,
-            name   = u.name,
+            name   = aes.decrypt(u.name),
             socialType = u.social_type
         )
         for u in users
