@@ -32,10 +32,10 @@ def getUserList(db:Session = Depends(get_db), pageNum:int = Query(1, ge=1), page
 @user_router.post("/user", response_model=ApiResponse[UserDto])
 def create_user(db:Session = Depends(get_db)
                 , request:UserCreateRequest = Depends(UserCreateRequest.as_form)
-                , storeage_service:StorageService = Depends(get_storage_service)
+                , storage_service:StorageService = Depends(get_storage_service)
                 ):
 
-    userDto = user_crud.createUser(db, request, storeage_service)
+    userDto = user_crud.createUser(db, request, storage_service)
 
     return{
         "code": ResultCode.SUCCESS,
