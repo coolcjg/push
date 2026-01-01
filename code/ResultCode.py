@@ -27,3 +27,5 @@ class ResultCode(StrEnum):
 
     # User
     USER_EXISTS = "USER_EXISTS"
+
+    NOT_EXISTS = "NOT_EXISTS"

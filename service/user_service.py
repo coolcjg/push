@@ -81,4 +81,20 @@ def createUser(db:Session, request:UserCreateRequest, storageService:StorageServ
     return userDto
 
 
+def get_user(db:Session, user_id:str) -> UserDto:
+    user = db.query(User).filter(User.user_id == user_id).first()
+
+    if not user:
+        raise CustomException(ResultCode.NOT_EXISTS)
+
+    userDto = UserDto(
+        userId=user.user_id,
+        auth=user.auth,
+        name=user.name,
+        image=user.image
+    )
+
+    return  userDto
+
+
 

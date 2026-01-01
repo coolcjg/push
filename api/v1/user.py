@@ -7,7 +7,7 @@ from dependency.storage import get_storage_service
 from schemas.ApiResponse import ApiResponse
 from schemas.UserDto import UserDto
 from schemas.getUserListDto import getUserListDto
-from crud import user as user_crud
+from service import user_service as user_crud
 from schemas.user.UserCreateRequest import UserCreateRequest
 from service.storage_service import StorageService
 
@@ -43,6 +43,15 @@ def create_user(db:Session = Depends(get_db)
         "data": userDto
     }
 
+@user_router.get("/user/{userId}", response_model=ApiResponse[UserDto], response_model_exclude_none=True)
+def get_user(userId:str, db:Session = Depends(get_db)):
+    userDto = user_crud.get_user(db, userId)
+
+    return{
+        "code": ResultCode.SUCCESS,
+        "message": "ok",
+        "data": userDto
+    }
 
 
 
