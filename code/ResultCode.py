@@ -24,3 +24,6 @@ class ResultCode(StrEnum):
     INTERNAL_ERROR = "INTERNAL_ERROR"
     DATABASE_ERROR = "DATABASE_ERROR"
     AES_ERROR = "AES_ERROR"
+
+    # User
+    USER_EXISTS = "USER_EXISTS"
