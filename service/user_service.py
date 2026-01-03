@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 
 from common.password_encoder import hash_password
+from schemas.user.UserDeleteRequest import UserDeleteRequest
+from schemas.user.UserUpdateRequest import UserUpdateRequest
 from service.storage_service import StorageService
 from code.ResultCode import ResultCode
 from common.AES256 import AES256
@@ -59,9 +61,11 @@ def createUser(db:Session, request:UserCreateRequest, storageService:StorageServ
     if exists:
         raise CustomException(ResultCode.USER_EXISTS)
 
+    aes = AES256()
+
     user = User(
         user_id = request.userId,
-        name = request.name,
+        name = aes.encrypt(request.name),
         password = hash_password(request.password),
         image = image_path,
         auth = request.auth,
@@ -74,7 +78,7 @@ def createUser(db:Session, request:UserCreateRequest, storageService:StorageServ
     userDto = UserDto(
         userId=user.user_id,
         auth=user.auth,
-        name=user.name,
+        name=aes.decrypt(user.name),
         image=user.image
     )
 
@@ -87,14 +91,62 @@ def get_user(db:Session, user_id:str) -> UserDto:
     if not user:
         raise CustomException(ResultCode.NOT_EXISTS)
 
+    aes = AES256()
     userDto = UserDto(
         userId=user.user_id,
         auth=user.auth,
-        name=user.name,
+        name=aes.decrypt(user.name),
         image=user.image
     )
 
     return  userDto
+
+def update_user(db:Session, req:UserUpdateRequest):
+    user = db.query(User).filter(User.user_id == req.userId).first()
+    aes = AES256()
+
+    if not user:
+        raise CustomException(ResultCode.NOT_EXISTS)
+
+    if req.password is not None:
+        user.password = hash_password(req.password)
+
+    if req.name is not None:
+        user.name = aes.encrypt(req.name)
+
+    if req.image is not None:
+        user.image=  req.image
+
+    if req.auth is not None:
+        user.auth = req.auth
+
+    db.commit()
+    db.refresh(user)
+
+    return UserDto(
+        userId = user.user_id,
+        auth = user.auth,
+        name = aes.decrypt(user.name),
+        image = user.image
+    )
+
+def delete_users(db:Session, req:UserDeleteRequest) -> int:
+    users = (
+        db.query(User)
+        .filter(User.user_id.in_(req.userIds))
+        .all()
+    )
+
+    if not users:
+        return 0
+
+    for user in users:
+        db.delete(user)
+
+    return len(users)
+
+def get_user_exists(db:Session, user_id:str) -> bool:
+    return db.query(User).filter(User.user_id == user_id).first() is not None
 
 
 
